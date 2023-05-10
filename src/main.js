@@ -1,16 +1,26 @@
-import TripInfoPresenter from './presenter/trip-info-presenter.js';
-import TripFilterPresenter from './presenter/trip-filters-presenter.js';
-import TripPresenter from './presenter/trip-presenter.js';
+import PageFilter from './view/page-filter.js';
+import TripInfo from './view/trip-info.js';
+import TripInfoMainView from './view/trip-info-main.js';
+import TripInfoCostView from './view/trip-info-cost.js';
+import TripPlanPresenter from './presenter/trip-presenter.js';
+import { RenderPosition, render } from './render.js';
+import TripEventsModel from './model/trip-events-model.js';
 
-const body = document.querySelector('.page-body');
-const tripHeaderInfo = body.querySelector('.trip-main');
-const tripHeaderFilter = body.querySelector('.trip-controls__filters');
-const mainContent = body.querySelector('.trip-events');
+const tripMainContainer = document.querySelector('.trip-main');
+const filtersContainer = tripMainContainer.querySelector('.trip-controls__filters');
+const tripPlanContainer = document.querySelector('.trip-events');
+const tripEventsModel = new TripEventsModel();
 
-const tripPresenter = new TripPresenter({ sortContainer: mainContent });
-const tripFilterPresenter = new TripFilterPresenter({ sortContainer: tripHeaderFilter });
-const tripInfoPresenter = new TripInfoPresenter({ sortContainer: tripHeaderInfo });
+const tripPlanPresenter = new TripPlanPresenter({
+  tripPlanContainer: tripPlanContainer,
+  tripEventsModel,
+});
 
-tripInfoPresenter.init();
-tripFilterPresenter.init();
-tripPresenter.init();
+
+render(new TripInfo(), tripMainContainer, RenderPosition.AFTERBEGIN);
+const tripInfoContainer = document.querySelector('.trip-main__trip-info');
+render(new TripInfoMainView, tripInfoContainer);
+render(new TripInfoCostView, tripInfoContainer);
+render(new PageFilter(), filtersContainer);
+
+tripPlanPresenter.init();
