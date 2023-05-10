@@ -1,15 +1,13 @@
 import { createElement } from '../render.js';
 
-function createTripInfo() {
-  return (
-    `<section class="trip-main__trip-info  trip-info">
-  </section>`
-  );
+function createTripPlanTemplate() {
+  return `<section class="trip-events container">
+  </section>`;
 }
 
-export default class TripInfo {
+export default class TripPlanView {
   getTemplate() {
-    return createTripInfo();
+    return createTripPlanTemplate();
   }
 
   getElement() {
