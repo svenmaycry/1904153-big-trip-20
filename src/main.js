@@ -1,5 +1,5 @@
-import PageFilter from './view/page-filter.js';
-import TripInfo from './view/trip-info.js';
+import PageFilterView from './view/page-filter.js';
+import TripInfoView from './view/trip-info.js';
 import TripInfoMainView from './view/trip-info-main.js';
 import TripInfoCostView from './view/trip-info-cost.js';
 import TripPlanPresenter from './presenter/trip-presenter.js';
@@ -17,10 +17,10 @@ const tripPlanPresenter = new TripPlanPresenter({
 });
 
 
-render(new TripInfo(), tripMainContainer, RenderPosition.AFTERBEGIN);
+render(new TripInfoView(), tripMainContainer, RenderPosition.AFTERBEGIN);
 const tripInfoContainer = document.querySelector('.trip-main__trip-info');
 render(new TripInfoMainView, tripInfoContainer);
 render(new TripInfoCostView, tripInfoContainer);
-render(new PageFilter(), filtersContainer);
+render(new PageFilterView(), filtersContainer);
 
 tripPlanPresenter.init();

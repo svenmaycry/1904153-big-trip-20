@@ -1,6 +1,6 @@
 import { createElement } from '../render.js';
 
-function createPageFilter() {
+function createPageFilterView() {
   return (
     `<form class="trip-filters" action="#" method="get">
     <div class="trip-filters__filter">
@@ -23,9 +23,9 @@ function createPageFilter() {
   </form>`);
 }
 
-export default class PageFilter {
+export default class PageFilterView {
   getTemplate() {
-    return createPageFilter();
+    return createPageFilterView();
   }
 
   getElement() {

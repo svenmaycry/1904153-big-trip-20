@@ -1,6 +1,6 @@
 import { createElement } from '../render.js';
 
-function createTripSort() {
+function createTripSortView() {
   return (
     `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     <div class="trip-sort__item  trip-sort__item--day">
@@ -31,9 +31,9 @@ function createTripSort() {
   );
 }
 
-export default class TripSort {
+export default class TripSortView {
   getTemplate() {
-    return createTripSort();
+    return createTripSortView();
   }
 
   getElement() {
