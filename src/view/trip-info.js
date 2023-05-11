@@ -1,15 +1,15 @@
 import { createElement } from '../render.js';
 
-function createTripInfo() {
+function createTripInfoView() {
   return (
     `<section class="trip-main__trip-info  trip-info">
   </section>`
   );
 }
 
-export default class TripInfo {
+export default class TripInfoView {
   getTemplate() {
-    return createTripInfo();
+    return createTripInfoView();
   }
 
   getElement() {
