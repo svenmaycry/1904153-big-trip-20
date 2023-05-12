@@ -1,4 +1,4 @@
-import { render, replace } from '../framework/render.js';
+import { render, replace, RenderPosition } from '../framework/render.js';
 import TripPlanView from '../view/trip-plan-view.js';
 import TripSortView from '../view/trip-sort-view.js';
 import TripEventView from '../view/trip-event-view.js';
@@ -6,6 +6,13 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import TripEventEditView from '../view/trip-event-edit-view.js';
 import NoEventView from '../view/no-event-view.js';
 
+import PageFilterView from '../view/page-filter-view.js';
+import TripInfoView from '../view/trip-info-view.js';
+import TripInfoMainView from '../view/trip-info-main-view.js';
+import TripInfoCostView from '../view/trip-info-cost-view.js';
+
+const tripMainContainer = document.querySelector('.trip-main');
+const filtersContainer = tripMainContainer.querySelector('.trip-controls__filters');
 export default class TripPlanPresenter {
   #tripPlanContainer = null;
   #tripEventsModel = null;
@@ -69,6 +76,7 @@ export default class TripPlanPresenter {
     }
 
     render(eventComponent, this.#tripEventsListComponent.element);
+
   }
 
   #renderTripPlan() {
@@ -90,3 +98,9 @@ export default class TripPlanPresenter {
     }
   }
 }
+
+render(new TripInfoView(), tripMainContainer, RenderPosition.AFTERBEGIN);
+const tripInfoContainer = document.querySelector('.trip-main__trip-info');
+render(new TripInfoMainView, tripInfoContainer);
+render(new TripInfoCostView, tripInfoContainer);
+render(new PageFilterView(), filtersContainer);
