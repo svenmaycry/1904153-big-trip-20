@@ -1,32 +1,32 @@
 import { getMockTripEvent, mockTripDestinations, mockTripOffers } from '../mock/task.js';
 
-const EVENTS_COUNT = 4;
+const EVENTS_COUNT = 8;
 
 export default class TripEventsModel {
-  tripEvents = Array.from({ length: EVENTS_COUNT }, getMockTripEvent);
+  #tripEvents = Array.from({ length: EVENTS_COUNT }, getMockTripEvent);
 
-  getTripEvents() {
-    return this.tripEvents;
+  get tripEvents() {
+    return this.#tripEvents;
   }
 
-  tripDestinations = mockTripDestinations;
+  #tripDestinations = mockTripDestinations;
 
-  getTripDestinations() {
-    return this.tripDestinations;
+  get tripDestinations() {
+    return this.#tripDestinations;
   }
 
-  tripOffers = mockTripOffers;
+  #tripOffers = mockTripOffers;
 
-  getTripOffers() {
-    return this.tripOffers;
+  get tripOffers() {
+    return this.#tripOffers;
   }
 
-  getTripConcreteOffers(type) {
+  #findTripConcreteOffers(type) {
     return this.tripOffers.find((offer) => offer.type === type).offers;
   }
 
   mapIdToOffers(ids, type) {
-    const offers = this.getTripConcreteOffers(type);
+    const offers = this.#findTripConcreteOffers(type);
     return ids.map((offerId) => offers.find((offer) => offer.id === offerId));
   }
 }
