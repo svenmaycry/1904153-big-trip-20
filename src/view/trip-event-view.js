@@ -1,8 +1,17 @@
-import { createElement } from '../render.js';
-import { humanizeDateForEvent, humanizeTimeFrom, humanizeTimeTo, getTimeGap } from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import { humanizeDateForEvent, humanizeTimeFrom, humanizeTimeTo, getTimeGap } from '../utils/date.js';
 
 function createTripEventTemplate(tripEvent, destination, offers) {
   const { basePrice, dateFrom, dateTo, isFavorite, type } = tripEvent;
+
+  const findTripConcreteOffers = (eventType) => offers.find((offer) => offer.type === eventType).offers;
+
+  const mapIdToOffers = (ids, eventType) => {
+    const concreteOffers = findTripConcreteOffers(eventType);
+    return ids.map((offerId) => concreteOffers.find((offer) => offer.id === offerId));
+  };
+
+  const eventOffers = mapIdToOffers(tripEvent.offers, tripEvent.type);
 
   const date = humanizeDateForEvent(dateFrom);
   const timeFrom = humanizeTimeFrom(dateFrom);
@@ -14,7 +23,7 @@ function createTripEventTemplate(tripEvent, destination, offers) {
     ? 'event__favorite-btn event__favorite-btn--active'
     : 'event__favorite-btn';
 
-  const offersList = offers
+  const offersList = eventOffers
     .map((offer) => `
   <li class="event__offer">
     <span class="event__offer-title">${offer.title}</span>
@@ -60,26 +69,29 @@ function createTripEventTemplate(tripEvent, destination, offers) {
   );
 }
 
-export default class TripEventView {
-  constructor({ tripEvent, destination, offers }) {
-    this.tripEvent = tripEvent;
-    this.destination = destination;
-    this.offers = offers;
+export default class TripEventView extends AbstractView {
+  #tripEvent = null;
+  #destination = null;
+  #offers = null;
+  #handleEditClick = null;
+
+  constructor({ tripEvent, destination, offers, onEditClick }) {
+    super();
+    this.#tripEvent = tripEvent;
+    this.#destination = destination;
+    this.#offers = offers;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
   }
 
-  getTemplate() {
-    return createTripEventTemplate(this.tripEvent, this.destination, this.offers);
+  get template() {
+    return createTripEventTemplate(this.#tripEvent, this.#destination, this.#offers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

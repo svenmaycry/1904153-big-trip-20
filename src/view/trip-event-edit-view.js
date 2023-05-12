@@ -1,5 +1,5 @@
-import { createElement } from '../render.js';
-import { humanizeDateForEdit } from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import { humanizeDateForEdit } from '../utils/date.js';
 import { WAYPOINT_TYPES, DESTINATIONS_NAMES } from '../const.js';
 
 const BLANK_EVENT = {
@@ -34,6 +34,7 @@ const createTypesTemplate = (currentType) => WAYPOINT_TYPES.map((type) => `
 const createDestinationsTemplate = () => DESTINATIONS_NAMES.map((destination) => `<option value="${destination}"></option>`);
 
 function createTripEventEditTemplate(tripEvent, destination, offers) {
+
   const { basePrice, dateFrom, dateTo, type } = tripEvent;
   const dateFromFull = humanizeDateForEdit(dateFrom);
   const dateToFull = humanizeDateForEdit(dateTo);
@@ -108,6 +109,9 @@ function createTripEventEditTemplate(tripEvent, destination, offers) {
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">Cancel</button>
+        <button class="event__rollup-btn" type="button">
+          <span class="visually-hidden">Open event</span>
+        </button>
       </header>
       <section class="event__details">
         <section class="event__section  event__section--offers">
@@ -134,26 +138,39 @@ function createTripEventEditTemplate(tripEvent, destination, offers) {
   );
 }
 
-export default class TripEventEditView {
-  constructor({ tripEvent = BLANK_EVENT, destination, offers }) {
-    this.tripEvent = tripEvent;
-    this.destination = destination;
-    this.offers = offers;
+export default class TripEventEditView extends AbstractView {
+  #tripEvent = null;
+  #destination = null;
+  #offers = null;
+  #handleFormSubmit = null;
+  #handleRollupButtonClick = null;
+
+  constructor({ tripEvent = BLANK_EVENT, destination, offers, onFormSubmit, onRollupButtonClick }) {
+    super();
+    this.#tripEvent = tripEvent;
+    this.#destination = destination;
+    this.#offers = offers;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleRollupButtonClick = onRollupButtonClick;
+
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#rollupButtonClickHandler);
   }
 
-  getTemplate() {
-    return createTripEventEditTemplate(this.tripEvent, this.destination, this.offers);
+  get template() {
+    return createTripEventEditTemplate(this.#tripEvent, this.#destination, this.#offers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #rollupButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleRollupButtonClick();
+  };
 }

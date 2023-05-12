@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 function createPageFilterView() {
   return (
@@ -23,19 +23,8 @@ function createPageFilterView() {
   </form>`);
 }
 
-export default class PageFilterView {
-  getTemplate() {
+export default class PageFilterView extends AbstractView {
+  get template() {
     return createPageFilterView();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }
