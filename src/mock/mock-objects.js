@@ -1,7 +1,7 @@
 import { getRandomArrayElement, getRandomInteger } from '../utils/common.js';
 import { WAYPOINT_TYPES, DESTINATIONS_DESCRIPTIONS, DESTINATIONS_NAMES } from '../const.js';
 
-const mockTripDestinations = [
+const mockDestinations = [
   {
     id: 1,
     description: getRandomArrayElement(DESTINATIONS_DESCRIPTIONS),
@@ -40,7 +40,7 @@ const mockTripDestinations = [
   }
 ];
 
-const mockTripOffers = [
+const mockOffers = [
   {
     type: 'flight',
     offers: [
@@ -93,7 +93,7 @@ const mockTripOffers = [
   }
 ];
 
-const getMockTripEvent = () => ({
+const getMockEvent = () => ({
   id: getRandomInteger(1, 4),
   basePrice: getRandomInteger(1000, 2000),
   dateFrom: '2019-07-10T22:55:56.845Z',
@@ -107,4 +107,4 @@ const getMockTripEvent = () => ({
 });
 
 
-export { getMockTripEvent, mockTripDestinations, mockTripOffers };
+export { getMockEvent, mockDestinations, mockOffers };

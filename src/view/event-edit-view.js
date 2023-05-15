@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeDateForEdit } from '../utils/date.js';
+import { humanizeDateForEdit } from '../utils/event.js';
 import { WAYPOINT_TYPES, DESTINATIONS_NAMES } from '../const.js';
 
 const BLANK_EVENT = {
@@ -33,9 +33,9 @@ const createTypesTemplate = (currentType) => WAYPOINT_TYPES.map((type) => `
 
 const createDestinationsTemplate = () => DESTINATIONS_NAMES.map((destination) => `<option value="${destination}"></option>`);
 
-function createTripEventEditTemplate(tripEvent, destination, offers) {
+function createEventEditTemplate(event, destination, offers) {
 
-  const { basePrice, dateFrom, dateTo, type } = tripEvent;
+  const { basePrice, dateFrom, dateTo, type } = event;
   const dateFromFull = humanizeDateForEdit(dateFrom);
   const dateToFull = humanizeDateForEdit(dateTo);
 
@@ -44,7 +44,7 @@ function createTripEventEditTemplate(tripEvent, destination, offers) {
     .join('');
 
 
-  const isChecked = (offer) => tripEvent.offers.includes(offer.id) ? 'checked' : '';
+  const isChecked = (offer) => event.offers.includes(offer.id) ? 'checked' : '';
 
   const concreteOffers = offers.find((offer) => offer.type === type).offers;
 
@@ -138,16 +138,16 @@ function createTripEventEditTemplate(tripEvent, destination, offers) {
   );
 }
 
-export default class TripEventEditView extends AbstractView {
-  #tripEvent = null;
+export default class EventEditView extends AbstractView {
+  #event = null;
   #destination = null;
   #offers = null;
   #handleFormSubmit = null;
   #handleRollupButtonClick = null;
 
-  constructor({ tripEvent = BLANK_EVENT, destination, offers, onFormSubmit, onRollupButtonClick }) {
+  constructor({ event = BLANK_EVENT, destination, offers, onFormSubmit, onRollupButtonClick }) {
     super();
-    this.#tripEvent = tripEvent;
+    this.#event = event;
     this.#destination = destination;
     this.#offers = offers;
     this.#handleFormSubmit = onFormSubmit;
@@ -161,7 +161,7 @@ export default class TripEventEditView extends AbstractView {
   }
 
   get template() {
-    return createTripEventEditTemplate(this.#tripEvent, this.#destination, this.#offers);
+    return createEventEditTemplate(this.#event, this.#destination, this.#offers);
   }
 
   #formSubmitHandler = (evt) => {
