@@ -1,10 +1,10 @@
-import { render, replace } from '../framework/render.js';
+import { render, RenderPosition } from '../framework/render.js';
 import PlanView from '../view/plan-view.js';
 import SortView from '../view/sort-view.js';
-import EventView from '../view/event-view.js';
 import EventsListView from '../view/events-list-view.js';
-import EventEditView from '../view/event-edit-view.js';
 import NoEventView from '../view/no-event-view.js';
+import EventPresenter from './event-presenter.js';
+import { updateItem } from '../utils/common.js';
 
 export default class PlanPresenter {
   #planContainer = null;
@@ -12,10 +12,14 @@ export default class PlanPresenter {
 
   #planComponent = new PlanView();
   #eventsListComponent = new EventsListView();
+  #sortComponent = new SortView();
+  #noEventComponent = new NoEventView();
 
   #events = [];
   #destinations = [];
   #offers = [];
+
+  #eventPresenters = new Map();
 
   constructor({ planContainer, eventsModel }) {
     this.#planContainer = planContainer;
@@ -30,63 +34,63 @@ export default class PlanPresenter {
     this.#renderPlan();
   }
 
+  #handleModeChange = () => {
+    this.#eventPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleEventChange = (updatedEvent) => {
+    this.#events = updateItem(this.#events, updatedEvent);
+    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  };
+
+
+  #renderSort() {
+    render(this.#sortComponent, this.#planComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
   #renderEvent({ event, destination, offers }) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        replaceRedactorToEvent();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-    const eventComponent = new EventView({
-      event,
-      destination,
-      offers,
-      onEditClick: () => {
-        replaceEventToRedactor();
-        document.addEventListener('keydown', escKeyDownHandler);
-      }
+    const eventPresenter = new EventPresenter({
+      eventsListContainer: this.#eventsListComponent.element,
+      onDataChange: this.#handleEventChange,
+      onModeChange: this.#handleModeChange,
+      destination, offers,
     });
-    const eventEditComponent = new EventEditView({
-      event,
-      destination,
-      offers,
-      onFormSubmit: () => {
-        replaceRedactorToEvent();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-      onRollupButtonClick: () => {
-        replaceRedactorToEvent();
-      }
-    });
+    eventPresenter.init(event);
+    this.#eventPresenters.set(event.id, eventPresenter);
+  }
 
-    function replaceEventToRedactor() {
-      replace(eventEditComponent, eventComponent);
-    }
+  #renderEvents() {
+    this.#events
+      .forEach((event) => this.#renderEvent({
+        event,
+        destination: this.#destinations.find((dest) => dest.id === event.destination),
+        offers: this.#offers
+      }));
+  }
 
-    function replaceRedactorToEvent() {
-      replace(eventComponent, eventEditComponent);
-    }
+  #renderNoEvents() {
+    render(this.#noEventComponent, this.#planComponent.element, RenderPosition.AFTERBEGIN);
+  }
 
-    render(eventComponent, this.#eventsListComponent.element);
+  #clearEventsList() {
+    this.#eventPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventPresenters.clear();
+  }
+
+  #renderEventsList() {
+    render(this.#eventsListComponent, this.#planComponent.element);
+    this.#renderEvents();
   }
 
   #renderPlan() {
     render(this.#planComponent, this.#planContainer);
 
     if (!this.#events) {
-      render(new NoEventView(), this.#planComponent.element);
+      this.#renderNoEvents();
       return;
     }
 
-    render(new SortView(), this.#planComponent.element);
-    render(this.#eventsListComponent, this.#planComponent.element);
-
-    for (let i = 0; i < this.#events.length; i++) {
-      const event = this.#events[i];
-      const eventDestination = this.#destinations.find((dstntn) => dstntn.id === event.destination);
-      const eventOffers = this.#offers;
-      this.#renderEvent({ event, destination: eventDestination, offers: eventOffers });
-    }
+    this.#renderSort();
+    this.#renderEventsList();
   }
 }

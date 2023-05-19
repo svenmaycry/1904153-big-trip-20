@@ -1,5 +1,6 @@
 import { getRandomArrayElement, getRandomInteger } from '../utils/common.js';
 import { WAYPOINT_TYPES, DESTINATIONS_DESCRIPTIONS, DESTINATIONS_NAMES } from '../const.js';
+import { nanoid } from 'nanoid';
 
 const mockDestinations = [
   {
@@ -94,12 +95,12 @@ const mockOffers = [
 ];
 
 const getMockEvent = () => ({
-  id: getRandomInteger(1, 4),
+  id: nanoid(),
   basePrice: getRandomInteger(1000, 2000),
   dateFrom: '2019-07-10T22:55:56.845Z',
   dateTo: '2019-07-11T23:22:13.375Z',
   destination: getRandomInteger(1, 4),
-  isFavorite: getRandomInteger(0, 1),
+  isFavorite: false,
   offers: [
     1, 2
   ],
