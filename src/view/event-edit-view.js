@@ -164,13 +164,13 @@ export default class EventEditView extends AbstractView {
     return createEventEditTemplate(this.#event, this.#destination, this.#offers);
   }
 
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleFormSubmit();
-  };
-
   #rollupButtonClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleRollupButtonClick();
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit(this.#event);
   };
 }
