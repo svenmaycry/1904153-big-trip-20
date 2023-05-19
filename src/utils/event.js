@@ -42,13 +42,13 @@ const humanizeTimeFrom = (date) => date ? dayjs(date).utc().format(DATE_FORMAT_F
 const humanizeTimeTo = (date) => date ? dayjs(date).utc().format(DATE_FORMAT_FOR_EVENT_TIME) : '';
 
 function isEventPast(dateFrom, dateTo) {
-  return (dayjs().diff(dayjs(dateFrom)) > 0 && dayjs().diff(dayjs(dateTo)) > 0);
+  return (dayjs().isAfter(dayjs(dateFrom)) && dayjs().isAfter(dayjs(dateTo)));
 }
 function isEventPresent(dateFrom, dateTo) {
-  return (dayjs().diff(dayjs(dateFrom)) > 0 && dayjs().diff(dayjs(dateTo)) < 0);
+  return (dayjs().isAfter(dayjs(dateFrom)) && dayjs().isBefore(dayjs(dateTo)));
 }
 function isEventFuture(dateFrom, dateTo) {
-  return (dayjs().diff(dayjs(dateFrom)) < 0 && dayjs().diff(dayjs(dateTo)) < 0);
+  return (dayjs().isBefore(dayjs(dateFrom)) && dayjs().isBefore(dayjs(dateTo)));
 }
 
 const findTripConcreteOffers = (eventType, offers) => offers.find((offer) => offer.type === eventType).offers;
