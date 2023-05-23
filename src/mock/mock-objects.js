@@ -43,26 +43,6 @@ const mockDestinations = [
 
 const mockOffers = [
   {
-    type: 'flight',
-    offers: [
-      {
-        id: 1,
-        title: 'Upgrade to a business class',
-        price: 120
-      },
-      {
-        id: 2,
-        title: 'Switch seats',
-        price: 80
-      },
-      {
-        id: 3,
-        title: 'Add meal',
-        price: 100
-      }
-    ]
-  },
-  {
     type: 'taxi',
     offers: [
       {
@@ -91,14 +71,144 @@ const mockOffers = [
         price: 60
       },
     ]
+  },
+  {
+    type: 'train',
+    offers: [
+      {
+        id: 1,
+        title: 'Upgrade to a higher class',
+        price: 100
+      },
+      {
+        id: 2,
+        title: 'Choose seats',
+        price: 90
+      },
+    ]
+  },
+  {
+    type: 'ship',
+    offers: [
+      {
+        id: 1,
+        title: 'Upgrade to a business class',
+        price: 120
+      },
+      {
+        id: 2,
+        title: 'Switch seats',
+        price: 80
+      },
+      {
+        id: 3,
+        title: 'Add meal',
+        price: 100
+      }
+    ]
+  },
+  {
+    type: 'drive',
+    offers: [
+      {
+        id: 1,
+        title: 'Upgrade to a business class',
+        price: 120
+      },
+      {
+        id: 2,
+        title: 'Add music',
+        price: 180
+      },
+      {
+        id: 3,
+        title: 'Add additional stop',
+        price: 200
+      }
+    ]
+  },
+  {
+    type: 'flight',
+    offers: [
+      {
+        id: 1,
+        title: 'Upgrade to a business class',
+        price: 120
+      },
+      {
+        id: 2,
+        title: 'Switch seats',
+        price: 80
+      },
+      {
+        id: 3,
+        title: 'Add meal',
+        price: 100
+      }
+    ]
+  },
+  {
+    type: 'check-in',
+    offers: [
+      {
+        id: 1,
+        title: 'Add more room',
+        price: 250
+      },
+      {
+        id: 2,
+        title: 'Upgrade to a higher class',
+        price: 400
+      },
+      {
+        id: 3,
+        title: 'Add breakfast',
+        price: 50
+      },
+      {
+        id: 4,
+        title: 'Add cleaning',
+        price: 150
+      }
+    ]
+  },
+  {
+    type: 'sightseeing',
+    offers: [
+      {
+        id: 1,
+        title: 'Upgrade to a business class',
+        price: 120
+      },
+      {
+        id: 2,
+        title: 'Switch seats',
+        price: 80
+      },
+    ]
+  },
+  {
+    type: 'restaurant',
+    offers: [
+      {
+        id: 1,
+        title: 'Add Michelenne Star',
+        price: 300
+      },
+      {
+        id: 2,
+        title: 'Add More Michelenne Star',
+        price: 500
+      }
+    ]
   }
 ];
 
 const getMockEvent = () => ({
   id: nanoid(),
   basePrice: getRandomInteger(1000, 2000),
-  dateFrom: '2019-07-10T22:55:56.845Z',
-  dateTo: '2019-07-11T23:22:13.375Z',
+  dateFrom: `2019-07-1${getRandomInteger(0, 1)}T${getRandomInteger(11, 23)}:55:56.845Z`,
+  dateTo: `2019-07-1${getRandomInteger(1, 2)}T23:22:13.375Z`,
   destination: getRandomInteger(1, 4),
   isFavorite: false,
   offers: [
