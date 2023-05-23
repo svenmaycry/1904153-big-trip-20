@@ -1,4 +1,4 @@
-const WAYPOINT_TYPES = ['taxi', 'bus', 'flight'];
+const WAYPOINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const DESTINATIONS_NAMES = ['Paris', 'New York', 'Berlin', 'Warsaw', 'Moscow'];
 const DESTINATIONS_DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
@@ -9,4 +9,10 @@ const DESTINATIONS_DESCRIPTIONS = [
   'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum',
 ];
 
-export { WAYPOINT_TYPES, DESTINATIONS_NAMES, DESTINATIONS_DESCRIPTIONS };
+const SortType = {
+  DAY: 'day',
+  TIME: 'time',
+  PRICE: 'price',
+};
+
+export { WAYPOINT_TYPES, DESTINATIONS_NAMES, DESTINATIONS_DESCRIPTIONS, SortType };

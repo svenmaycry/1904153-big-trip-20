@@ -5,6 +5,8 @@ import EventsListView from '../view/events-list-view.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from './event-presenter.js';
 import { updateItem } from '../utils/common.js';
+import { SortType } from '../const.js';
+import { sortByDay, sortByTime, sortByPrice } from '../utils/event.js';
 
 export default class PlanPresenter {
   #planContainer = null;
@@ -12,7 +14,7 @@ export default class PlanPresenter {
 
   #planComponent = new PlanView();
   #eventsListComponent = new EventsListView();
-  #sortComponent = new SortView();
+  #sortComponent = null;
   #noEventComponent = new NoEventView();
 
   #events = [];
@@ -20,6 +22,7 @@ export default class PlanPresenter {
   #offers = [];
 
   #eventPresenters = new Map();
+  #currentSortType = SortType.DAY;
 
   constructor({ planContainer, eventsModel }) {
     this.#planContainer = planContainer;
@@ -43,8 +46,36 @@ export default class PlanPresenter {
     this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
   };
 
+  #sortEvents(sortType) {
+    switch (sortType) {
+      case SortType.DAY:
+        this.#events.sort(sortByDay);
+        break;
+      case SortType.TIME:
+        this.#events.sort(sortByTime);
+        break;
+      case SortType.PRICE:
+        this.#events.sort(sortByPrice);
+        break;
+    }
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortEvents(sortType);
+    this.#clearEventsList();
+    this.#renderEventsList();
+  };
 
   #renderSort() {
+    this.#sortComponent = new SortView({
+      onSortTypeChange: this.#handleSortTypeChange
+    });
+
     render(this.#sortComponent, this.#planComponent.element, RenderPosition.AFTERBEGIN);
   }
 
