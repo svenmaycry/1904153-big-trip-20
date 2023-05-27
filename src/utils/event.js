@@ -2,10 +2,12 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 dayjs.extend(utc);
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
+dayjs.extend(customParseFormat);
 
 const DATE_FORMAT_FOR_EDIT = 'DD/MM/YY HH:mm';
 const DATE_FORMAT_FOR_EVENT_DATE = 'MMM DD';
@@ -40,6 +42,8 @@ const humanizeDateForEdit = (date) => date ? dayjs(date).utc().format(DATE_FORMA
 const humanizeDateForEvent = (date) => date ? dayjs(date).utc().format(DATE_FORMAT_FOR_EVENT_DATE) : '';
 const humanizeTimeFrom = (date) => date ? dayjs(date).utc().format(DATE_FORMAT_FOR_EVENT_TIME) : '';
 const humanizeTimeTo = (date) => date ? dayjs(date).utc().format(DATE_FORMAT_FOR_EVENT_TIME) : '';
+
+const parseDateFromEditFormat = (dateString) => dayjs.utc(dateString, DATE_FORMAT_FOR_EDIT).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
 
 function isEventPast(dateFrom, dateTo) {
   return (dayjs().isAfter(dayjs(dateFrom)) && dayjs().isAfter(dayjs(dateTo)));
@@ -80,4 +84,4 @@ function sortByPrice(eventA, eventB) {
   return eventB.basePrice - eventA.basePrice;
 }
 
-export { humanizeDateForEdit, humanizeDateForEvent, humanizeTimeFrom, humanizeTimeTo, getTimeGap, isEventPast, isEventPresent, isEventFuture, mapIdToOffers, sortByDay, sortByTime, sortByPrice };
+export { humanizeDateForEdit, humanizeDateForEvent, humanizeTimeFrom, humanizeTimeTo, getTimeGap, isEventPast, isEventPresent, isEventFuture, mapIdToOffers, sortByDay, sortByTime, sortByPrice, parseDateFromEditFormat };

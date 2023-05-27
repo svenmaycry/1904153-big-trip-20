@@ -17,15 +17,17 @@ export default class EventPresenter {
 
   #event = null;
   #destination = null;
+  #destinations = null;
   #offers = null;
   #mode = Mode.DEFAULT;
 
-  constructor({ eventsListContainer, onDataChange, onModeChange, destination, offers }) {
+  constructor({ eventsListContainer, onDataChange, onModeChange, destination, destinations, offers }) {
     this.#eventsListContainer = eventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
 
     this.#destination = destination;
+    this.#destinations = destinations;
     this.#offers = offers;
   }
 
@@ -45,9 +47,11 @@ export default class EventPresenter {
     this.#eventEditComponent = new EventEditView({
       event: this.#event,
       destination: this.#destination,
+      destinations: this.#destinations,
       offers: this.#offers,
       onFormSubmit: this.#handleFormSubmit,
       onRollupButtonClick: this.#handleRollupButtonClick,
+      onCancelClick: this.#handleCancelClick,
     });
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
@@ -74,6 +78,7 @@ export default class EventPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#eventEditComponent.reset(this.#event);
       this.#replaceRedactorToEvent();
     }
   }
@@ -94,8 +99,14 @@ export default class EventPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#eventEditComponent.reset(this.#event);
       this.#replaceRedactorToEvent();
     }
+  };
+
+  #handleCancelClick = () => {
+    this.#eventEditComponent.reset(this.#event);
+    this.#replaceRedactorToEvent();
   };
 
   #handleEditClick = () => {
@@ -103,6 +114,7 @@ export default class EventPresenter {
   };
 
   #handleRollupButtonClick = () => {
+    this.#eventEditComponent.reset(this.#event);
     this.#replaceRedactorToEvent();
   };
 

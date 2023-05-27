@@ -79,12 +79,12 @@ export default class PlanPresenter {
     render(this.#sortComponent, this.#planComponent.element, RenderPosition.AFTERBEGIN);
   }
 
-  #renderEvent({ event, destination, offers }) {
+  #renderEvent({ event, destination, destinations, offers }) {
     const eventPresenter = new EventPresenter({
       eventsListContainer: this.#eventsListComponent.element,
       onDataChange: this.#handleEventChange,
       onModeChange: this.#handleModeChange,
-      destination, offers,
+      destination, destinations, offers,
     });
     eventPresenter.init(event);
     this.#eventPresenters.set(event.id, eventPresenter);
@@ -95,6 +95,7 @@ export default class PlanPresenter {
       .forEach((event) => this.#renderEvent({
         event,
         destination: this.#destinations.find((dest) => dest.id === event.destination),
+        destinations: this.#destinations,
         offers: this.#offers
       }));
   }
