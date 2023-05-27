@@ -1,5 +1,5 @@
 const WAYPOINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-const DESTINATIONS_NAMES = ['Paris', 'New York', 'Berlin', 'Warsaw', 'Moscow'];
+const DESTINATIONS_NAMES = ['Paris', 'New York', 'Warsaw', 'Moscow'];
 const DESTINATIONS_DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
   'Cras aliquet varius magna, non porta ligula feugiat eget',

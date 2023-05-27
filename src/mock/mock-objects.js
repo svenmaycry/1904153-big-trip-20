@@ -1,12 +1,12 @@
 import { getRandomArrayElement, getRandomInteger } from '../utils/common.js';
-import { WAYPOINT_TYPES, DESTINATIONS_DESCRIPTIONS, DESTINATIONS_NAMES } from '../const.js';
+import { WAYPOINT_TYPES, DESTINATIONS_DESCRIPTIONS } from '../const.js';
 import { nanoid } from 'nanoid';
 
 const mockDestinations = [
   {
     id: 1,
     description: getRandomArrayElement(DESTINATIONS_DESCRIPTIONS),
-    name: getRandomArrayElement(DESTINATIONS_NAMES),
+    name: 'Paris',
     pictures: Array.from({ length: getRandomInteger(1, 5) }, () => ({
       src: `https://loremflickr.com/248/152?random=${getRandomInteger(1, 30)}`,
       description: getRandomArrayElement(DESTINATIONS_DESCRIPTIONS)
@@ -15,7 +15,7 @@ const mockDestinations = [
   {
     id: 2,
     description: getRandomArrayElement(DESTINATIONS_DESCRIPTIONS),
-    name: getRandomArrayElement(DESTINATIONS_NAMES),
+    name: 'New York',
     pictures: Array.from({ length: getRandomInteger(1, 5) }, () => ({
       src: `https://loremflickr.com/248/152?random=${getRandomInteger(1, 30)}`,
       description: getRandomArrayElement(DESTINATIONS_DESCRIPTIONS)
@@ -24,7 +24,7 @@ const mockDestinations = [
   {
     id: 3,
     description: getRandomArrayElement(DESTINATIONS_DESCRIPTIONS),
-    name: getRandomArrayElement(DESTINATIONS_NAMES),
+    name: 'Moscow',
     pictures: Array.from({ length: getRandomInteger(1, 5) }, () => ({
       src: `https://loremflickr.com/248/152?random=${getRandomInteger(1, 30)}`,
       description: getRandomArrayElement(DESTINATIONS_DESCRIPTIONS)
@@ -33,7 +33,7 @@ const mockDestinations = [
   {
     id: 4,
     description: getRandomArrayElement(DESTINATIONS_DESCRIPTIONS),
-    name: getRandomArrayElement(DESTINATIONS_NAMES),
+    name: 'Warsaw',
     pictures: Array.from({ length: getRandomInteger(1, 5) }, () => ({
       src: `https://loremflickr.com/248/152?random=${getRandomInteger(1, 30)}`,
       description: getRandomArrayElement(DESTINATIONS_DESCRIPTIONS)

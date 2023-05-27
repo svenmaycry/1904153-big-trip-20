@@ -17,7 +17,7 @@ function createFilterItemTemplate(filter, isChecked) {
         <label
           class="trip-filters__filter-label"
           for="filter-${type}"
-        >${type} ${count}</label>
+        >${type}</label>
     </div>`
   );
 }
