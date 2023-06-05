@@ -1,123 +1,195 @@
-import { render, RenderPosition } from '../framework/render.js';
+import { render, RenderPosition, remove } from '../framework/render.js';
 import PlanView from '../view/plan-view.js';
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import NoEventView from '../view/no-event-view.js';
 import EventPresenter from './event-presenter.js';
-import { updateItem } from '../utils/common.js';
-import { SortType } from '../const.js';
+import NewEventPresenter from './new-event-presenter.js';
+import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
 import { sortByDay, sortByTime, sortByPrice } from '../utils/event.js';
+import { filter } from '../utils/filter.js';
 
 export default class PlanPresenter {
   #planContainer = null;
   #eventsModel = null;
+  #filterModel = null;
 
   #planComponent = new PlanView();
   #eventsListComponent = new EventsListView();
   #sortComponent = null;
-  #noEventComponent = new NoEventView();
-
-  #events = [];
-  #destinations = [];
-  #offers = [];
+  #noEventComponent = null;
 
   #eventPresenters = new Map();
+  #newEventPresenter = null;
   #currentSortType = SortType.DAY;
+  #filterType = FilterType.EVERYTHING;
 
-  constructor({ planContainer, eventsModel }) {
+  constructor({ planContainer, eventsModel, filterModel, onNewEventDestroy }) {
     this.#planContainer = planContainer;
     this.#eventsModel = eventsModel;
+    this.#filterModel = filterModel;
+
+    this.#newEventPresenter = new NewEventPresenter({
+      eventsListContainer: this.#eventsListComponent.element,
+      onDataChange: this.#handleViewAction,
+      onDestroy: onNewEventDestroy,
+      destinations: this.destinations,
+      offers: this.offers,
+    });
+
+    this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
+  }
+
+  get events() {
+    this.#filterType = this.#filterModel.filter;
+    const events = this.#eventsModel.events;
+    const filteredEvents = filter[this.#filterType](events);
+
+    switch (this.#currentSortType) {
+      case SortType.DAY:
+        return filteredEvents.sort(sortByDay);
+      case SortType.TIME:
+        return filteredEvents.sort(sortByTime);
+      case SortType.PRICE:
+        return filteredEvents.sort(sortByPrice);
+    }
+
+    return filteredEvents;
+  }
+
+  get destinations() {
+    return this.#eventsModel.destinations;
+  }
+
+  get offers() {
+    return this.#eventsModel.offers;
   }
 
   init() {
-    this.#events = [...this.#eventsModel.events];
-    this.#destinations = [...this.#eventsModel.destinations];
-    this.#offers = [...this.#eventsModel.offers];
-
     this.#renderPlan();
   }
 
+  createEvent() {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newEventPresenter.init();
+  }
+
   #handleModeChange = () => {
+    this.#newEventPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleEventChange = (updatedEvent) => {
-    this.#events = updateItem(this.#events, updatedEvent);
-    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
-  };
-
-  #sortEvents(sortType) {
-    switch (sortType) {
-      case SortType.DAY:
-        this.#events.sort(sortByDay);
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType) {
+      case UserAction.UPDATE_EVENT:
+        this.#eventsModel.updateEvent(updateType, update);
         break;
-      case SortType.TIME:
-        this.#events.sort(sortByTime);
+      case UserAction.ADD_EVENT:
+        this.#eventsModel.addEvent(updateType, update);
         break;
-      case SortType.PRICE:
-        this.#events.sort(sortByPrice);
+      case UserAction.DELETE_EVENT:
+        this.#eventsModel.deleteEvent(updateType, update);
         break;
     }
-    this.#currentSortType = sortType;
-  }
+  };
+
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType) {
+      case UpdateType.PATCH:
+        this.#eventPresenters.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        this.#clearPlan();
+        this.#renderPlan();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearPlan({ resetSortType: true });
+        this.#renderPlan();
+        break;
+    }
+  };
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
       return;
     }
 
-    this.#sortEvents(sortType);
-    this.#clearEventsList();
-    this.#renderEventsList();
+    this.#currentSortType = sortType;
+    this.#clearPlan();
+    this.#renderPlan();
   };
 
   #renderSort() {
     this.#sortComponent = new SortView({
+      currentSortType: this.#currentSortType,
       onSortTypeChange: this.#handleSortTypeChange
     });
 
     render(this.#sortComponent, this.#planComponent.element, RenderPosition.AFTERBEGIN);
   }
 
-  #renderEvent({ event, destination, destinations, offers }) {
+  #renderEvent({ event, destinations, offers }) {
     const eventPresenter = new EventPresenter({
       eventsListContainer: this.#eventsListComponent.element,
-      onDataChange: this.#handleEventChange,
+      onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
-      destination, destinations, offers,
+      destinations, offers,
     });
     eventPresenter.init(event);
     this.#eventPresenters.set(event.id, eventPresenter);
   }
 
-  #renderEvents() {
-    this.#events
+  #renderEvents(events, destinations, offers) {
+    events
       .forEach((event) => this.#renderEvent({
         event,
-        destination: this.#destinations.find((dest) => dest.id === event.destination),
-        destinations: this.#destinations,
-        offers: this.#offers
+        destinations: destinations,
+        offers: offers
       }));
   }
 
   #renderNoEvents() {
+    const events = this.#eventsModel.events;
+    const isEmpty = (events.length === 0);
+    this.#noEventComponent = new NoEventView({
+      filterType: this.#filterType,
+      isEmpty,
+    });
+
     render(this.#noEventComponent, this.#planComponent.element, RenderPosition.AFTERBEGIN);
   }
 
-  #clearEventsList() {
-    this.#eventPresenters.forEach((presenter) => presenter.destroy());
-    this.#eventPresenters.clear();
+  #renderEventsList() {
+    const events = this.events;
+    const destinations = this.destinations;
+    const offers = this.offers;
+
+    render(this.#eventsListComponent, this.#planComponent.element);
+    this.#renderEvents(events, destinations, offers);
   }
 
-  #renderEventsList() {
-    render(this.#eventsListComponent, this.#planComponent.element);
-    this.#renderEvents();
+  #clearPlan({ resetSortType = false } = {}) {
+    this.#newEventPresenter.destroy();
+    this.#eventPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventPresenters.clear();
+
+    remove(this.#sortComponent);
+
+    if (this.#noEventComponent) {
+      remove(this.#noEventComponent);
+    }
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DAY;
+    }
   }
 
   #renderPlan() {
     render(this.#planComponent, this.#planContainer);
 
-    if (!this.#events) {
+    if (this.events.length === 0) {
       this.#renderNoEvents();
       return;
     }
