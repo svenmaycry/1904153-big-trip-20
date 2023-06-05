@@ -1,10 +1,11 @@
 import { isEventPast, isEventFuture, isEventPresent } from './event.js';
+import { FilterType } from '../const.js';
 
 const filter = {
-  everything: (events) => events.filter((event) => event),
-  past: (events) => events.filter((event) => isEventPast(event.dateFrom, event.dateTo)),
-  present: (events) => events.filter((event) => isEventPresent(event.dateFrom, event.dateTo)),
-  future: (events) => events.filter((event) => isEventFuture(event.dateFrom, event.dateTo)),
+  [FilterType.EVERYTHING]: (events) => events.filter((event) => event),
+  [FilterType.PAST]: (events) => events.filter((event) => isEventPast(event.dateFrom, event.dateTo)),
+  [FilterType.PRESENT]: (events) => events.filter((event) => isEventPresent(event.dateFrom, event.dateTo)),
+  [FilterType.FUTURE]: (events) => events.filter((event) => isEventFuture(event.dateFrom, event.dateTo)),
 };
 
 export { filter };

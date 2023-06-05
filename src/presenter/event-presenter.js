@@ -1,6 +1,7 @@
 import { render, replace, remove } from '../framework/render.js';
 import EventView from '../view/event-view.js';
 import EventEditView from '../view/event-edit-view.js';
+import { UserAction, UpdateType } from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -16,17 +17,15 @@ export default class EventPresenter {
   #eventEditComponent = null;
 
   #event = null;
-  #destination = null;
   #destinations = null;
   #offers = null;
   #mode = Mode.DEFAULT;
 
-  constructor({ eventsListContainer, onDataChange, onModeChange, destination, destinations, offers }) {
+  constructor({ eventsListContainer, onDataChange, onModeChange, destinations, offers }) {
     this.#eventsListContainer = eventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
 
-    this.#destination = destination;
     this.#destinations = destinations;
     this.#offers = offers;
   }
@@ -44,14 +43,15 @@ export default class EventPresenter {
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
+
     this.#eventEditComponent = new EventEditView({
       event: this.#event,
-      destination: this.#destination,
       destinations: this.#destinations,
       offers: this.#offers,
       onFormSubmit: this.#handleFormSubmit,
       onRollupButtonClick: this.#handleRollupButtonClick,
       onCancelClick: this.#handleCancelClick,
+      onDeleteClick: this.#handleDeleteClick,
     });
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
@@ -105,8 +105,15 @@ export default class EventPresenter {
   };
 
   #handleCancelClick = () => {
-    this.#eventEditComponent.reset(this.#event);
-    this.#replaceRedactorToEvent();
+    remove(this.#eventEditComponent);
+  };
+
+  #handleDeleteClick = (event) => {
+    this.#handleDataChange(
+      UserAction.DELETE_EVENT,
+      UpdateType.MINOR,
+      event,
+    );
   };
 
   #handleEditClick = () => {
@@ -119,11 +126,19 @@ export default class EventPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({ ...this.#event, isFavorite: !this.#event.isFavorite });
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      { ...this.#event, isFavorite: !this.#event.isFavorite }
+    );
   };
 
   #handleFormSubmit = (event) => {
-    this.#handleDataChange(event);
+    this.#handleDataChange(
+      UserAction.UPDATE_EVENT,
+      UpdateType.MINOR,
+      event,
+    );
     this.#replaceRedactorToEvent();
   };
 }
