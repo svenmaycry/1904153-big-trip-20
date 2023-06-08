@@ -3,6 +3,7 @@ import PlanView from '../view/plan-view.js';
 import SortView from '../view/sort-view.js';
 import EventsListView from '../view/events-list-view.js';
 import NoEventView from '../view/no-event-view.js';
+import LoadingView from '../view/loading-view.js';
 import EventPresenter from './event-presenter.js';
 import NewEventPresenter from './new-event-presenter.js';
 import { SortType, UpdateType, UserAction, FilterType } from '../const.js';
@@ -16,6 +17,7 @@ export default class PlanPresenter {
 
   #planComponent = new PlanView();
   #eventsListComponent = new EventsListView();
+  #loadingComponent = new LoadingView();
   #sortComponent = null;
   #noEventComponent = null;
 
@@ -23,6 +25,7 @@ export default class PlanPresenter {
   #newEventPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
   constructor({ planContainer, eventsModel, filterModel, onNewEventDestroy }) {
     this.#planContainer = planContainer;
@@ -35,6 +38,7 @@ export default class PlanPresenter {
       onDestroy: onNewEventDestroy,
       destinations: this.destinations,
       offers: this.offers,
+      onModeChange: this.#handleModeChange,
     });
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
@@ -74,10 +78,16 @@ export default class PlanPresenter {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newEventPresenter.init();
+    if (this.events.length === 0) {
+      remove(this.#noEventComponent);
+    }
   }
 
   #handleModeChange = () => {
     this.#newEventPresenter.destroy();
+    if (this.events.length === 0) {
+      this.#renderNoEvents();
+    }
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -106,6 +116,11 @@ export default class PlanPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearPlan({ resetSortType: true });
+        this.#renderPlan();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderPlan();
         break;
     }
@@ -150,6 +165,10 @@ export default class PlanPresenter {
       }));
   }
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#planComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
   #renderNoEvents() {
     const events = this.#eventsModel.events;
     const isEmpty = (events.length === 0);
@@ -176,6 +195,7 @@ export default class PlanPresenter {
     this.#eventPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noEventComponent) {
       remove(this.#noEventComponent);
@@ -188,6 +208,11 @@ export default class PlanPresenter {
 
   #renderPlan() {
     render(this.#planComponent, this.#planContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
     if (this.events.length === 0) {
       this.#renderNoEvents();

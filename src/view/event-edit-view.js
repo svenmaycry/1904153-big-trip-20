@@ -272,11 +272,11 @@ export default class EventEditView extends AbstractStatefulView {
       this._setState({
         event: {
           ...this._state.event,
-          offers: [...offers, Number(evt.target.id)],
+          offers: [...offers, evt.target.id],
         }
       });
     } else {
-      const updatedOffers = offers.filter((offer) => offer !== Number(evt.target.id));
+      const updatedOffers = offers.filter((offer) => offer !== evt.target.id);
       this._setState({
         event: {
           ...this._state.event,
