@@ -7,16 +7,18 @@ export default class NewEventPresenter {
   #eventsListContainer = null;
   #handleDataChange = null;
   #handleDestroy = null;
+  #handleModeChange = null;
 
   #eventEditComponent = null;
 
   #destinations = null;
   #offers = null;
 
-  constructor({ eventsListContainer, onDataChange, onDestroy, destinations, offers }) {
+  constructor({ eventsListContainer, onDataChange, onDestroy, destinations, offers, onModeChange }) {
     this.#eventsListContainer = eventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
+    this.#handleModeChange = onModeChange;
 
     this.#destinations = destinations;
     this.#offers = offers;
@@ -63,12 +65,14 @@ export default class NewEventPresenter {
 
   #handleDeleteClick = () => {
     this.destroy();
+    this.#handleModeChange();
   };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this.destroy();
+      this.#handleModeChange();
     }
   };
 }
