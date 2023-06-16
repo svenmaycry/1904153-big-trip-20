@@ -1,5 +1,6 @@
 import Observable from '../framework/observable.js';
 import { UpdateType } from '../const.js';
+import { showAlert } from '../utils/event.js';
 
 export default class EventsModel extends Observable {
   #eventsApiService = null;
@@ -32,12 +33,14 @@ export default class EventsModel extends Observable {
       this.#destinations = destinations;
       const offers = await this.#eventsApiService.offers;
       this.#offers = offers;
+      this._notify(UpdateType.INIT);
     } catch (err) {
       this.#events = [];
       this.#destinations = [];
       this.#offers = [];
+      this._notify(UpdateType.ERROR);
+
     }
-    this._notify(UpdateType.INIT);
   }
 
   async updateEvent(updateType, update) {
@@ -57,6 +60,7 @@ export default class EventsModel extends Observable {
       ];
       this._notify(updateType, updatedEvent);
     } catch (err) {
+      showAlert('Failed to update event: can\'t reach server. Please try again.');
       throw new Error('Can\'t update event');
     }
   }
@@ -68,6 +72,7 @@ export default class EventsModel extends Observable {
       this.#events = [newEvent, ...this.#events];
       this._notify(updateType, update);
     } catch (err) {
+      showAlert('Failed to add event: can\'t reach server. Please try again.');
       throw new Error('Can\'t add event');
     }
   }
@@ -86,6 +91,7 @@ export default class EventsModel extends Observable {
       ];
       this._notify(updateType);
     } catch (err) {
+      showAlert('Failed to delete event: can\'t reach server. Please try again.');
       throw new Error('Can\'t delete event');
     }
   }

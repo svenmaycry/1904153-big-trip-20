@@ -40,19 +40,6 @@ export default class NewEventPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
-  destroy() {
-    if (this.#eventEditComponent === null) {
-      return;
-    }
-
-    this.#handleDestroy();
-
-    remove(this.#eventEditComponent);
-    this.#eventEditComponent = null;
-
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
-  }
-
   setSaving() {
     this.#eventEditComponent.updateElement({
       isDisabled: true,
@@ -70,6 +57,19 @@ export default class NewEventPresenter {
     };
 
     this.#eventEditComponent.shake(resetFormState);
+  }
+
+  destroy() {
+    if (this.#eventEditComponent === null) {
+      return;
+    }
+
+    this.#handleDestroy();
+
+    remove(this.#eventEditComponent);
+    this.#eventEditComponent = null;
+
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
   #handleFormSubmit = (event) => {
