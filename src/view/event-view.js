@@ -1,7 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDateForEvent, humanizeTimeFrom, humanizeTimeTo, getTimeGap, mapIdToOffers } from '../utils/event.js';
 
-function createEventTemplate(event, destinations, offers) {
+const createEventTemplate = (event, destinations, offers) => {
   const { basePrice, dateFrom, dateTo, isFavorite, type } = event;
 
   const eventOffers = mapIdToOffers(offers, event.offers, event.type);
@@ -62,7 +62,7 @@ function createEventTemplate(event, destinations, offers) {
     </div>
   </li>`
   );
-}
+};
 
 export default class EventView extends AbstractView {
   #event = null;

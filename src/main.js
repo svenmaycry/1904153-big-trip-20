@@ -1,9 +1,7 @@
-import { render } from './framework/render.js';
 import PlanPresenter from './presenter/plan-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import EventsModel from './model/events-model.js';
 import FilterModel from './model/filter-model.js';
-import NewEventButtonView from './view/new-event-button-view.js';
 import EventsApiService from './events-api-service.js';
 
 const AUTHORIZATION = 'Basic G451leet1984P';
@@ -26,7 +24,6 @@ const main = async () => {
     planContainer,
     eventsModel,
     filterModel,
-    onNewEventDestroy: handleNewEventFormClose,
   });
 
   const filterPresenter = new FilterPresenter({
@@ -35,25 +32,9 @@ const main = async () => {
     eventsModel,
   });
 
-  const newEventButtonComponent = new NewEventButtonView({
-    onClick: handleNewEventButtonClick,
-  });
-
-  function handleNewEventFormClose() {
-    newEventButtonComponent.element.disabled = false;
-  }
-
-  function handleNewEventButtonClick() {
-    planPresenter.createEvent();
-    newEventButtonComponent.element.disabled = true;
-  }
-
   filterPresenter.init();
   planPresenter.init();
-  eventsModel.init()
-    .finally(() => {
-      render(newEventButtonComponent, tripMainContainer);
-    });
+  eventsModel.init();
 };
 
 main();

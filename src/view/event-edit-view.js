@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeDateForEdit, parseDateFromEditFormat, capitalizeFirstLetter } from '../utils/event.js';
-
+import he from 'he';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -14,21 +14,20 @@ const DEFAULT_EVENT = {
   type: 'taxi'
 };
 
-function createEventEditTemplate(state, destinations, offers) {
+const createEventEditTemplate = (state, destinations, offers) => {
   const { event, isDisabled, isSaving, isDeleting } = state;
   const { basePrice, dateFrom, dateTo, type } = event;
   const dateFromFull = humanizeDateForEdit(dateFrom);
   const dateToFull = humanizeDateForEdit(dateTo);
   const isEventNew = !state.event.id;
-
-  const isEventJustOpen = (event.destination === '');
-  const destination = isEventJustOpen ? '' : destinations.find((dest) => dest.id === event.destination);
-  const picturesList = isEventJustOpen ? '' : destination.pictures
+  const isEventJustCreated = (event.destination === '');
+  const destination = isEventJustCreated ? '' : destinations.find((dest) => dest.id === event.destination);
+  const picturesList = isEventJustCreated ? '' : destination.pictures
     .map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`)
     .join('');
-
   const isChecked = (offer) => event.offers.includes(offer.id) ? 'checked' : '';
   const concreteOffers = offers.find((offer) => offer.type === type).offers;
+  const isOffersEmpty = (concreteOffers.length === 0);
 
   const offersList = concreteOffers
     .map((offer) => `
@@ -95,7 +94,7 @@ function createEventEditTemplate(state, destinations, offers) {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${isEventJustOpen ? '' : destination.name}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${isEventJustCreated ? '' : he.encode(destination.name)}" list="destination-list-1" ${isDisabled ? 'disabled' : ''} required>
           <datalist id="destination-list-1">
             ${createDestinationsTemplate()}
           </datalist>
@@ -114,14 +113,14 @@ function createEventEditTemplate(state, destinations, offers) {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" required ${isDisabled ? 'disabled' : ''}>
+          <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" name="event-price" value="${basePrice}" required ${isDisabled ? 'disabled' : ''}>
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
         ${buttonsTemplate}
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
+        <section class="event__section  event__section--offers ${isOffersEmpty ? 'visually-hidden' : ''}">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
@@ -129,7 +128,7 @@ function createEventEditTemplate(state, destinations, offers) {
           </div>
         </section>
 
-        <section class="event__section  event__section--destination ${isEventJustOpen ? 'visually-hidden' : ''}">
+        <section class="event__section  event__section--destination ${isEventJustCreated ? 'visually-hidden' : ''}">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${destination.description}</p>
 
@@ -143,7 +142,7 @@ function createEventEditTemplate(state, destinations, offers) {
     </form>
   </li>`
   );
-}
+};
 
 export default class EventEditView extends AbstractStatefulView {
   #datepickers = null;

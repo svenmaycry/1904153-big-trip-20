@@ -72,18 +72,6 @@ export default class EventPresenter {
     remove(prevEventEditComponent);
   }
 
-  destroy() {
-    remove(this.#eventComponent);
-    remove(this.#eventEditComponent);
-  }
-
-  resetView() {
-    if (this.#mode !== Mode.DEFAULT) {
-      this.#eventEditComponent.reset(this.#event);
-      this.#replaceRedactorToEvent();
-    }
-  }
-
   setSaving() {
     if (this.#mode === Mode.EDITING) {
       this.#eventEditComponent.updateElement({
@@ -117,6 +105,18 @@ export default class EventPresenter {
     };
 
     this.#eventEditComponent.shake(resetRedactorState);
+  }
+
+  destroy() {
+    remove(this.#eventComponent);
+    remove(this.#eventEditComponent);
+  }
+
+  resetView() {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#eventEditComponent.reset(this.#event);
+      this.#replaceRedactorToEvent();
+    }
   }
 
   #replaceEventToRedactor() {
