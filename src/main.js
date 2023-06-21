@@ -4,7 +4,7 @@ import EventsModel from './model/events-model.js';
 import FilterModel from './model/filter-model.js';
 import EventsApiService from './events-api-service.js';
 
-const AUTHORIZATION = 'Basic G451leet1984P';
+const AUTHORIZATION = 'Basic G451leet1984PzY';
 const END_POINT = 'https://20.ecmascript.pages.academy/big-trip';
 
 const tripMainContainer = document.querySelector('.trip-main');
