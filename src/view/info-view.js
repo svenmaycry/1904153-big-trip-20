@@ -20,9 +20,8 @@ const createTripInfoMainTemplate = (events, destinations) => {
       return '&mdash;';
     } else if (middleDestinations.every((md, i, arr) => md === arr[0])) {
       return `&mdash; ${middleDestinations[0]} &mdash;`;
-    } else {
-      return '...';
     }
+    return '...';
   };
 
   const firstDate = humanizeDateForEvent(events[0].dateFrom);
@@ -54,7 +53,7 @@ const createTripInfoCostTemplate = (events, offers) => {
     allIncludedOffers.push(...offersForEvent);
   }
 
-  const sumIncludedOffersPrice = (objects) => {
+  const summarizeIncludedOffersPrice = (objects) => {
     let sum = 0;
     for (let i = 0; i < objects.length; i++) {
       sum += objects[i].price;
@@ -62,7 +61,7 @@ const createTripInfoCostTemplate = (events, offers) => {
     return sum;
   };
 
-  const price = sumBasePrice(events) + sumIncludedOffersPrice(allIncludedOffers);
+  const price = sumBasePrice(events) + summarizeIncludedOffersPrice(allIncludedOffers);
 
   return `<p class="trip-info__cost">
             Total: &euro;&nbsp;<span class="trip-info__cost-value">${price}</span>
